@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdio>
+#include <map>
 
 #define ID_UNKNOWN 0 ///< standard kennz flag for particles
 #define ID_NOT_FINISH -1 ///< kennz flag for particles which reached ::StorageTime
@@ -11,16 +12,12 @@
 #define ID_DECAYED -4 ///< kennz flag for particles which reached TParticle::xend
 #define ID_INITIAL_NOT_FOUND -5 ///< kennz flag for particles which had a too low total energy to find a initial spot in the source volume
 
-#define NEUTRON 1 ///< TParticle::protneut of neutrons
-#define PROTON 2 ///< TParticle::protneut of protons
-#define BF_ONLY 3 ///< set protneut in configuration to this value to print out a ramp heating analysis
-#define BF_CUT 4 ///< set protneut in configuration to this value to print out a planar slice through electric/magnetic fields
-#define ELECTRON 6 ///< TParticle::protneut of electrons
-#define GEOMETRY 7 ///< set protneut in configuration to this value to print out a sampling of the geometry
-
-#define POLARISATION_GOOD 1 ///< Printed to endlog for low field seeking neutron
-#define POLARISATION_BAD 2 ///< Printed to endlog for high field seeking neutron
-#define POLARISATION_NONE 3 ///< Printed to endlog for neutron without magnetic moment
+#define NEUTRON 1 ///< TParticle::type of neutrons
+#define PROTON 2 ///< TParticle::type of protons
+#define BF_ONLY 3 ///< set particletype in configuration to this value to print out a ramp heating analysis
+#define BF_CUT 4 ///< set particletype in configuration to this value to print out a planar slice through electric/magnetic fields
+#define ELECTRON 6 ///< TParticle::type of electrons
+#define GEOMETRY 7 ///< set particletype in configuration to this value to print out a sampling of the geometry
 
 #define OUTPUT_EVERYTHING 1 ///< configuration value to print endlog+tracklog
 #define OUTPUT_ENDPOINTS 2 ///< configuration value to print endlog only
@@ -29,24 +26,22 @@
 #define OUTPUT_ENDPOINTSandSPIN 4 ///< configuration value to print endlog+spintrack
 
 // physical constants
-const long double pi = 3.1415926535897932384626; ///< Pi
-const long double ele_e = 1.602176487E-19; ///< elementary charge [C]
-const long double gravconst = 9.80665; ///< g [m/s]
-const long double conv = pi/180.; ///< deg to rad conversion factor
-const long double mu0 = 4*pi*1e-7; ///< magnetic permeability [Vs/Am]
-const long double m_n = 1.674927211E-27/ele_e; ///< neutron mass [eV/c^2]
-const long double m_p = 1.672621637E-27/ele_e; ///< proton mass [eV/c^2]
-const long double m_e = 9.10938215e-31/ele_e; ///< electron mass [eV/c^2]
-const long double c_0 = 299792458; ///< light speed [m/s]
-const long double hbar = 1.05457266e-34; ///< planck constant [Js]
-const long double mu_nSI = -0.96623641e-26;	///< Neutron magnetic moment [J/T]
-const long double gamma_n = -1.83247185e8; ///< 2*::mu_nSI/::hquer gyromagnetic ratio of neutron [1/Ts]
+#define pi 3.1415926535897932384626L ///< Pi
+#define ele_e 1.602176487E-19L ///< elementary charge [C]
+#define gravconst 9.80665L ///< g [m/s]
+#define conv pi/180.L ///< deg to rad conversion factor
+#define mu0 4*pi*1e-7L ///< magnetic permeability [Vs/Am]
+#define m_n 1.674927211E-27L/ele_e ///< neutron mass [eV/c^2]
+#define m_p 1.672621637E-27L/ele_e ///< proton mass [eV/c^2]
+#define m_e 9.10938215e-31L/ele_e ///< electron mass [eV/c^2]
+#define c_0 299792458.L ///< light speed [m/s]
+#define hbar 1.05457266e-34L ///< planck constant [Js]
+#define mu_nSI -0.96623641e-26L	///< Neutron magnetic moment [J/T]
+#define gamma_n -1.83247185e8L ///< 2*::mu_nSI/::hquer gyromagnetic ratio of neutron [1/Ts]
 
 const long double lengthconv = 0.01; ///< length conversion factor cgs -> SI [cm -> m]
 const long double Bconv = 1e-4; ///< magnetic field conversion factor cgs -> SI [G -> T]
 const long double Econv = 1e2; ///< electric field conversion factor cgs -> SI [V/cm -> V/m]
-
-long double StorageTime = 1500.; ///< max. simulation time
 
 int jobnumber = 0; ///< job number, read from command line paramters, used for parallel calculations
 string inpath = "."; ///< path to configuration files, read from command line paramters
@@ -129,5 +124,33 @@ long double ElectronSpectrum(long double E){
 	return 8.2*sqrt(E*1e-6*E*1e-6 + 2*E*1e-6*m_e*c_0*c_0*1e-6) * pow(Qvalue - E*1e-6, 2) * (E*1e-6 + m_e*c_0*c_0*1e-6);
 }
 
+
+//read variables from *.in file into map
+void ReadInFile(const char *inpath, map<string, map<string, string> > &vars){
+	ifstream infile(inpath);
+	char c;
+	string rest,section,key;
+	while (infile.good() && (infile >> ws) && (c = infile.peek())){
+		if (c == '[' && infile.ignore()){
+			if (infile.peek() == '/'){
+				section = "";
+				printf("\n");
+			}
+			else{
+				getline(infile, section, ']');
+//				printf("section : %s\n",section.c_str());
+			}
+			getline(infile,rest);
+		}
+		else if (c == '#')
+			getline(infile,rest);
+		else if (section != ""){
+			infile >> key;
+			getline(infile,vars[section][key]);
+		}
+		else
+			getline(infile,rest);
+	}
+}
 
 #endif /*GLOBALS_H_*/

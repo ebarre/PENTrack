@@ -29,7 +29,9 @@
 #include "nr/stepper.h"
 #include "nr/stepperdopr853.h"
 
-#include "particle.h"
+#include "neutron.h"
+#include "proton.h"
+#include "electron.h"
 #include "globals.h"
 #include "fields.h"
 #include "geometry.h"
@@ -45,11 +47,11 @@ void PrintBField(const char *outfile, TField &field);
 void PrintGeometry(const char *outfile, TGeometry &geom); // do many random collisionchecks and write all collisions to outfile
 
 
+long double SimTime = 1500.; ///< max. simulation time
 int MonteCarloAnzahl=1; ///< number of particles for MC simulation (read from config)
 int particletype; ///< type of particle which shall be simulated (read from config)
 int reflektlog = 0; ///< write reflections (1), transmissions (2) or both (3) to file? (read from config)
 vector<float> snapshots; ///< times when to take snapshots (read from config)
-int polarisation = POLARISATION_GOOD; ///< polarisation of neutrons (read from config)
 int decay = 2; ///< should neutrons decay? (no: 0; yes: 1; yes, with simulation of decay particles: 2) (read from config)
 long double decayoffset = 0; ///< start neutron decay timer after decayoffset seconds (read from config)
 long double tau_n = 885.7; ///< life time of neutrons (read from config)
@@ -135,7 +137,7 @@ int main(int argc, char **argv){
 	
 	cout << "Loading random number generator..." << '\n';
 	// load random number generator from all3inone.in
-	TMCGenerator mc(string(inpath + "/all3inone.in").c_str(), polarisation, decay, decayoffset, tau_n);
+	TMCGenerator mc(string(inpath + "/particle.in").c_str());
 	
 	FILE *endlog = NULL, *tracklog = NULL, *snap = NULL, *reflectlog = NULL;
 	// open output files according to config
@@ -194,17 +196,17 @@ int main(int argc, char **argv){
 				printf("\nDon't know protneut==%i! Exiting...\n",particletype);
 				exit(-1);
 			}
-			p->Integrate(geom, mc, &field, endlog, tracklog, snap, &snapshots, reflektlog, reflectlog); // integrate particle
+			p->Integrate(SimTime, geom, mc, &field, endlog, tracklog, snap, &snapshots, reflektlog, reflectlog); // integrate particle
 			ID_counter[p->type % 3][p->ID]++; // increment counters
-			ntotalsteps += p->nsteps;
+			ntotalsteps += p->Nsteps;
 			IntegratorTime += p->comptime;
 			ReflTime += p->refltime;
 
 			if (decay == 2){
 				for (vector<TParticle*>::iterator i = p->secondaries.begin(); i != p->secondaries.end(); i++){
-					(*i)->Integrate(geom, mc, &field, endlog, tracklog); // integrate secondary particles
+					(*i)->Integrate(SimTime, geom, mc, &field, endlog, tracklog); // integrate secondary particles
 					ID_counter[(*i)->type % 3][(*i)->ID]++;
-					ntotalsteps += (*i)->nsteps;
+					ntotalsteps += (*i)->Nsteps;
 					IntegratorTime += (*i)->comptime;
 					ReflTime += (*i)->refltime;
 				}
@@ -250,43 +252,17 @@ int main(int argc, char **argv){
 void ConfigInit(void){
 	/* setting default values */
 	particletype = NEUTRON;
-	polarisation = POLARISATION_GOOD;
 	neutdist = 0;
 	outputopt = 2;
 	MonteCarloAnzahl = 1;
 	/*end default values*/
 	
 	/* read lines in config.in into map */
-	ifstream infile(string(inpath+"/config.in").c_str());
 	map<string, map<string, string> > config;
-	char c;
-	string rest,section,key;
-	while (infile.good() && (infile >> ws) && (c = infile.peek())){
-		if (c == '[' && infile.ignore()){
-			if (infile.peek() == '/'){
-				section = "";
-				printf("\n");
-			}
-			else{
-				getline(infile, section, ']');
-				printf("section : %s\n",section.c_str());
-			}
-			getline(infile,rest);
-		}
-		else if (c == '#')
-			getline(infile,rest);
-		else if (section != ""){
-			infile >> key;
-			getline(infile,config[section][key]);
-			printf("%s:%s\n", key.c_str(), config[section][key].c_str());
-		}
-		else
-			getline(infile,rest);
-	}
+	ReadInFile(string(inpath+"/config.in").c_str(), config);
 	
 	/* read variables from map by casting strings in map into istringstreams and extracting value with ">>"-operator */
 	istringstream(config["global"]["particletype"])				>> particletype;
-	istringstream(config["global"]["polarisation"])			>> polarisation;
 	istringstream(config["global"]["neutdist"])				>> neutdist;
 	istringstream(config["global"]["outputopt"])			>> outputopt;
 	
@@ -313,11 +289,9 @@ void ConfigInit(void){
 
 	istringstream(config["global"]["reflektlog"])			>> reflektlog;
 	istringstream(config["global"]["MonteCarloAnzahl"])		>> MonteCarloAnzahl;
-	istringstream(config["global"]["storagetime"])			>> StorageTime;
+	istringstream(config["global"]["simtime"])				>> SimTime;
 	istringstream(config["global"]["BFTargetB"])			>> BFTargetB;
 	istringstream(config["global"]["decay"])				>> decay;
-	istringstream(config["global"]["tau"])					>> tau_n;	
-	istringstream(config["global"]["decayoffset"])			>> decayoffset;	
 	istringstream(config["global"]["BCutPlane"])			>> BCutPlanePoint[0] >> BCutPlanePoint[1] >> BCutPlanePoint[2] 
 															>> BCutPlanePoint[3] >> BCutPlanePoint[4] >> BCutPlanePoint[5]
 															>> BCutPlanePoint[6] >> BCutPlanePoint[7] >> BCutPlanePoint[8]
@@ -347,13 +321,12 @@ void OpenFiles(FILE *&endlog, FILE *&tracklog, FILE *&snap, FILE *&reflectlog){
     // print endlog header
 	fprintf(endlog,"jobnumber particle type polarisation "
                    "tstart xstart ystart zstart "
-                   "rstart phistart vstart alphastart gammastart "
+                   "vxstart vystart vzstart "
                    "Hstart Estart "
                    "tend xend yend zend "
-                   "rend phiend vend alphaend gammaend dt "
-                   "Hend Eend stopID NSF ComputingTime BFflipprob "
-                   "Nrefl vladmax vladtotal thumbmax trajlength "
-                   "Hmax tauSF dtau\n");
+                   "vxend vyend vzend "
+                   "Hend Eend stopID Nspinflip ComputingTime "
+                   "Nhit trajlength Hmax\n");
 
 	if (particletype == NEUTRON && snapshots.size() > 0){
 		// open snapshot log
@@ -363,15 +336,14 @@ void OpenFiles(FILE *&endlog, FILE *&tracklog, FILE *&snap, FILE *&reflectlog){
 	    	exit(-1);
 	    }
 	    // print snapshot log header
-		fprintf(snap,"jobnumber particle type polarisation "
-	                   "tstart xstart ystart zstart "
-	                   "rstart phistart vstart alphastart gammastart "
-	                   "Hstart Estart "
-	                   "tend xend yend zend "
-	                   "rend phiend vend alphaend gammaend dt "
-	                   "Hend Eend stopID NSF ComputingTime BFflipprob "
-	                   "Nrefl vladmax vladtotal thumbmax trajlength "
-	                   "Hmax tauSF dtau\n");
+		fprintf(snap,	"jobnumber particle type polarisation "
+                		"tstart xstart ystart zstart "
+                		"vxstart vystart vzstart "
+                		"Hstart Estart "
+                		"tend xend yend zend "
+                		"vxend vyend vzend "
+                		"Hend Eend stopID Nspinflip ComputingTime "
+                		"Nhit trajlength Hmax\n");
 	}
 
 	if ((outputopt==OUTPUT_EVERYTHING)||(outputopt==OUTPUT_EVERYTHINGandSPIN)){
@@ -382,10 +354,10 @@ void OpenFiles(FILE *&endlog, FILE *&tracklog, FILE *&snap, FILE *&reflectlog){
 	    	exit(-1);
 	    }
 	    // print track log header
-		fprintf(tracklog,"particle type polarisation t x y z dxdt dydt dzdt "
-							"v H E Bx dBxdx dBxdy dBxdz By dBydx "
+		fprintf(tracklog,"particle type polarisation t x y z vx vy vz "
+							"H E Bx dBxdx dBxdy dBxdz By dBydx "
 							 "dBydy dBydz Bz dBzdx dBzdy dBzdz Babs dBdx dBdy dBdz Ex Ey Ez V "
-							 "timestep logvlad logthumb logBF\n");
+							 "timestep\n");
 	}
 
 	if (particletype == NEUTRON && reflektlog){
