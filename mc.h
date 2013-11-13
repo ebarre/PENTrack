@@ -103,8 +103,9 @@ struct TMCGenerator{
 	
 
 	/// energy distribution of UCNs
+
 	long double NeutronSpectrum(){
-//		return SqrtDist(0, 300e-9);
+		return SqrtDist(0, 300e-9);
 
 /*
 		//neutron energy spectrum for PENeLOPE (storage only) 180cm above source and 10cm absorber
@@ -175,8 +176,9 @@ struct TMCGenerator{
 				return x*1e-9;
 		}
 */
+/*
+	//spectrum leaving horizontal guide
 
-		//spectrum leaving horizontal guide
 		long double x,y;
 		for(;;){
 			x = UniformDist(100,300);
@@ -184,7 +186,7 @@ struct TMCGenerator{
 			if (UniformDist(0,14000) < y)
 				return x*1e-9;
 		}
-
+*/
 /*
 		//lfs spectrum after ramping with 0.5B and absorber 34cm above storage bottom
 		long double x,y;
