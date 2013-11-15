@@ -1,6 +1,6 @@
 [MATERIALS]
 #name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability
-SS          183                 0.0852          0.16 #need to ask ruediger/martin what material "SS" is
+SS          183                 0.0852          0.16 
 NiPLT       212                 0.0311          0.16
 Al          54                  0.00756         0.16
 
@@ -10,13 +10,12 @@ Al          54                  0.00756         0.16
 #the ID also defines the order in which overlapping solids are handled (highest ID will be considered first)
 #ignore times are pairs of times [s] in between the solid will be ignored, e.g. 100-200 500-1000
 #ID							STLfile							material_name		ignore_times
-6			in/guide1.STL                           SS
+6						in/guide1.STL                           SS
 7                       in/guide2.STL                           SS
 8                       in/guide3.STL                           SS
 9                       in/guide4.STL                           SS
-10                      in/prod.STL                             SS
 11                      in/endplate.STL                         Al
-12			in/new_source_simple.STL		NiPLT
+12						in/production_volume.STL			NiPLT
 
 [SOURCE]
 ############ sourcemodes ###############
@@ -34,7 +33,7 @@ Al          54                  0.00756         0.16
 #sourcetype 	STL-file		ActiveTime	Enormal (surface only)
 #surface 		in/source.STL                   200		0
 #volume 		in/source.STL                   0
-volume                  in/production_volume.STL              40 
+volume                  in/prod.STL              40 
 
 [FIELDS]
 #field 		table-file			BFieldScale	EFieldScale	NullFieldTime	RampUpTime	FullFieldTime	RampDownTime
