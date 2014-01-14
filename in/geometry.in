@@ -9,8 +9,9 @@ Al		54.1			0.00756			0.2
 DLC		269			0.0625			0.01  
 UCNdet		0.1			1			0		# high efficiency assumed
 NiPLT       	212                	0.0311         	0.16
-Ni				245.11				0.0297			0.15
-NiMo			226.7135			0.0272			0.14
+Ni		245.11			0.0297			0.15
+NiMo		226.7135		0.0272			0.14
+CuBe		172.5			0.0232		0.0741
 
 [GEOMETRY]
 #solids the program will load, particle absorbed in the solid will be flagged with the ID of the solid
@@ -21,19 +22,50 @@ NiMo			226.7135			0.0272			0.14
 1			ignored					default
 2			in/bottle1.STL				NiPLT
 3			in/bottle2.STL				NiPLT
-4			in/tube1_0.5.STL				NiMo
-5 			in/tube_1_1.STL				NiMo
-6			in/tube2_0.5.STL				NiMo
-7 			in/tube_2_1.STL				NiMo
-8			in/tube_2.STL				NiMo
-9			in/tube_3.STL				NiMo
-10			in/stopper_case.STL			NiMo
-11			in/stopper.STL				NiMo
-12 			in/heat_exchanger_case.STL		NiMo
+4			in/tube0.5-1.STL				NiPLT
+5 			in/tube1-1.STL				NiPLT
+6			in/tube0.5-2.STL				NiPLT
+7 			in/tube_1-2.STL				NiPLT
+8			in/tube2.STL				NiPLT
+9			in/tube3.STL				NiPLT
+10			in/stopper_case.STL			NiPLT
+11			in/stopper.STL				NiPLT
+12 			in/heat_exchanger_case.STL		NiPLT
 13			in/heat_exchanger_core.STL		Cu
 14			in/heat_exchanger_Ni_foil.STL		Ni
-15			in/UCN_valve_tube.STL			NiMo
-16			in/UCN_valve_lower_close.STL	NiMo
+
+15			in/heat_exchanger_escaped_ucn_det_plate-1.STL	UCNdet
+16			in/heat_exchanger_escaped_ucn_det_plate-2.STL	UCNdet
+
+17			in/UCN_valve_case.STL			NiPLT
+18          		in/UCN_valve_lower_close.STL  		NiPLT		120-300
+19			in/UCN_valve_lower_open.STL  		NiPLT		0-120
+20			in/tube_afterCryostat.STL		NiMo
+21			in/SCpolarizer_bobbin.STL		NiPLT
+22			in/SCpolarizer_center_flange-1.STL	NiPLT
+23			in/SCpolarizer_center_flange-2.STL 	NiPLT
+24			in/SCpolarizer_center_foil-1.STL	Al
+25			in/SCpolarizer_CuBe_guide-1.STL		CuBe
+26			in/SCpolarizer_CuBe_guide-2.STL		CuBe
+27			in/SCpolarizer_end_flange-1.STL		NiPLT
+28			in/SCpolarizer_end_flange-2.STL		NiPLT
+29			in/SCpolarizer_outer_foil-1.STL		Al
+30			in/SCpolarizer_outer_foil-2.STL		Al
+
+#31			in/tube_SC.STL					NiMo
+32			in/tube_valve_SC.STL			NiMo
+33			in/Xe_Valve_case.STL			NiMo
+34			in/Xe_Valve_lower_open.STL			NiMo
+35			in/cyl_valve_tube.STL			NiMo
+36			in/45deg_tube-1.STL				NiMo  #Cu for spin flip measurement / NiMo for production
+37			in/elbow_tube.STL				NiMo   #Cu for spin flip measurement / NiMo for production
+38			in/45deg_tube-2.STL				NiMo   #Cu for spin flip measurement / NiMo for production
+
+40			in/30cm_guide.STL				NiMo   #BeO for spin flip measurement / NiMo for production
+41			in/polarizer_foil_tube.STL		NiMo	#No foil for production
+42 			in/tube_b4_det.STL		NiMo #or stainless for production... apparently this is unsure
+43 			in/det_alwindow.STL				Al
+44			in/ucn_det_disk.STL				UCNdet
 	
 
 [SOURCE]
@@ -52,7 +84,8 @@ NiMo			226.7135			0.0272			0.14
 #sourcetype 	STL-file		ActiveTime	Enormal (surface only)
 #surface 		in/source.STL                   200		0
 #volume 		in/source.STL                   0
-volume                  in/production_volume.STL              40 
+volume                  in/production_volume.STL              20 
+#min energy in production vol is ~0.8neV
 
 [FIELDS]
 #field 		table-file			BFieldScale	EFieldScale	NullFieldTime	RampUpTime	FullFieldTime	RampDownTime
