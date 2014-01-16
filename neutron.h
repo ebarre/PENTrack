@@ -189,7 +189,7 @@ protected:
 								"%.10LG %.10LG %.10LG %.10LG %.10LG %.10LG %.10LG "
 								"%.10LG %.10LG %.10LG %.10LG "
 								"%.10LG %.10LG\n",
-								jobnumber, particlenumber, type, polarisation, refl, currentsolid->ID,
+								jobnumber, particlenumber, type, polarisation, refl, entering->ID,
 								x1,y1[0],y1[1],y1[2],y1[3],y1[4],y1[5],
 								normal[0],normal[1],normal[2],H,
 								phi_r,theta_r);

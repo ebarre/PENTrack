@@ -3,8 +3,13 @@ OBJ=$(SRC:.c=.o)
 
 
 CC=g++
+<<<<<<< HEAD
 CFLAGS=-O2 -lrt #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
 LDFLAGS=
+=======
+CFLAGS=-O2 #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
+LDFLAGS=-lrt
+>>>>>>> Elyse_PENTrack
 RM=rm
 EXE=PENTrack
 
