@@ -100,7 +100,7 @@ struct TMCGenerator{
 
 	/// energy distribution of UCNs
 	long double NeutronSpectrum(){
-	return SqrtDist(90e-9, 300e-9);
+	return SqrtDist(0, 300e-9);
 
 /*
 		//neutron energy spectrum for PENeLOPE (storage only) 180cm above source and 10cm absorber

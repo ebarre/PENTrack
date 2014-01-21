@@ -8,7 +8,7 @@ NiPLT       	212                	0.0311         		0.16
 Ni		245.11			0.0297			0.15
 NiMo		226.7135		0.0272			0.14
 CuBe		172.5			0.0232			0.0741
-He		0.0213			1.37e-8			2.44e-6
+He		18.7854			50e-10			2.16e-3
 BeO		256.6665		4.09e-5			6.23e-2
 SS		183.0405		1.90e-2			8.52e-2
 
@@ -38,8 +38,8 @@ SS		183.0405		1.90e-2			8.52e-2
 17			in/heat_exchanger_det_plate-2.STL	UCNdet
 
 18			in/UCN_valve_case.STL			NiPLT
-19          		in/UCN_valve_lower-closed.STL  		NiPLT		20-300
-20			in/UCN_valve_lower-open.STL  		NiPLT		0-20
+19          		in/UCN_valve_lower-closed.STL  		NiPLT		120-300
+20			in/UCN_valve_lower-open.STL  		NiPLT		0-120
 21			in/tube_afterCryostat.STL		NiMo
 22			in/SCpolarizer_bobbin.STL		NiPLT
 23			in/SCpolarizer_center_flange-1.STL	NiPLT
