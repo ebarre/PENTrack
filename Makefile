@@ -5,8 +5,8 @@ CGAL_INCLUDE= #$(HOME)/CGAL-4.2/include    # uncomment if you have compiled CGAL
 CGAL_LIB= #$(HOME)/CGAL-4.2/lib
 
 CC=g++
-CFLAGS=-O2 -frounding-math -I$(CGAL_INCLUDE) -Wl,-rpath=$(CGAL_LIB) #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
-LDFLAGS=-lrt -lboost_system -L$(CGAL_LIB) -lCGAL
+CFLAGS=-O2 -frounding-math #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
+LDFLAGS= -lrt -lboost_system -lCGAL
 RM=rm
 EXE=PENTrack
 
