@@ -257,5 +257,4 @@ struct TGeometry{
 		
 };
 
-
 #endif /*GEOMETRY_H_*/

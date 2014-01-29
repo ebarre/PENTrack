@@ -38,7 +38,6 @@ struct TParticleConfig{
 /**
  * Class to generate random numbers in several distributions.
  */
-
 class TMCGenerator{
 private:
 	Ran *rangen; ///< random number generator
@@ -51,12 +50,11 @@ public:
 	/**
 	 * Constructor.
 	 *
-	 * Create random seed and read all3inone.in.
+	 * Create random seed and read infile.
 	 *
 	 * @param infile Path to configuration file
 	 */
 	TMCGenerator(const char *infile){
-
 		// get high resolution timestamp to generate seed
 		timespec highrestime;
 		clock_gettime(CLOCK_REALTIME, &highrestime);
@@ -100,6 +98,14 @@ public:
 		}
 	};
 
+	/**
+	 * Destructor.
+	 *
+	 * Delete random number generator.
+	 */
+	~TMCGenerator(){
+		delete rangen;
+	};
 
 	/// return uniformly distributed random number in [min..max]
 	long double UniformDist(long double min, long double max){
@@ -150,10 +156,8 @@ public:
 	
 
 	/// energy distribution of UCNs
-
 	long double NeutronSpectrum(){
-
-	return SqrtDist(90e-9, 300e-9);
+//		return SqrtDist(0, 300e-9);
 
 /*
 		//neutron energy spectrum for PENeLOPE (storage only) 180cm above source and 10cm absorber
@@ -225,7 +229,6 @@ public:
 		}
 */
 /*
-	//spectrum leaving horizontal guide
 		//spectrum leaving horizontal guide
 		long double x,y;
 		for(;;){
