@@ -10,7 +10,6 @@ MUPARSER_LIB= #-L$(HOME)/muparser_v2_2_3/lib/ # point gcc's -L option to muparse
 MUPARSER_SHAREDLIB= #-Wl,-rpath=$(HOME)/muparser_v2_2_3/lib/ # point gcc's -Wl,-rpath= option to muparser shared library if you have compiled muparser manually without installing it
 
 CC=g++
-
 CFLAGS=-O2 -frounding-math $(CGAL_INCLUDE) $(CGAL_SHAREDLIB) $(MUPARSER_INCLUDE) $(MUPARSER_SHAREDLIB) #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
 LDFLAGS=-lrt -lboost_system $(CGAL_LIB) -lCGAL $(MUPARSER_LIB) -lmuparser
 RM=rm
