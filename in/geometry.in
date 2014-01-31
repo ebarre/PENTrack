@@ -1,16 +1,16 @@
 [MATERIALS]
-#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability
-default		0			0			0
-Cu		171			0.0726			0.2
-Al		54.1			0.00756			0.2
-UCNdet		0.1			1			0		# high efficiency assumed
-NiPLT       	212                	0.0311         		0.16
-Ni		245.11			0.0297			0.15
-NiMo		226.7135		0.0272			0.14
-CuBe		172.5			0.0232			0.0741
-He		0.0213			1.37e-8			2.44e-6
-BeO		256.6665		4.09e-5			6.23e-2
-SS		183.0405		1.90e-2			8.52e-2
+#name		FermiReal [neV]		FermiImag [neV]		DiffuseReflectionProbability  SpinFlipReflection Probability
+default		0			0			0				0
+Cu		171			0.0726			0.2				10e-5
+Al		54.1			0.00756			0.2				10e-5
+UCNdet		0.1			1			0				0				# high efficiency assumed
+NiPLT       	212                	0.0311         		0.16				10e-5
+Ni		245.11			0.0297			0.15				10e-5
+NiMo		226.7135		0.0272			0.14				10e-5
+CuBe		172.5			0.0232			0.0741				10e-5
+He		0.0213			1.37e-8			2.44e-6				10e-5
+BeO		256.6665		4.09e-5			6.23e-2				10e-5
+SS		183.0405		1.90e-2			8.52e-2				10e-5
 
 [GEOMETRY]
 #solids the program will load, particle absorbed in the solid will be flagged with the ID of the solid
@@ -41,10 +41,10 @@ SS		183.0405		1.90e-2			8.52e-2
 19          		in/UCN_valve_lower-closed.STL  		NiPLT		20-300
 20			in/UCN_valve_lower-open.STL  		NiPLT		0-20
 21			in/tube_afterCryostat.STL		NiMo
-22			in/SCpolarizer_bobbin.STL		NiPLT
+22			in/bobbin.STL				NiPLT
 23			in/SCpolarizer_center_flange-1.STL	NiPLT
 24			in/SCpolarizer_center_flange-2.STL 	NiPLT
-25			in/SCpolarizer_center_foil-1.STL	Al
+25			in/SCpolarizer_center_foil.STL	Al
 26			in/SCpolarizer_CuBe_guide-1.STL		CuBe
 27			in/SCpolarizer_CuBe_guide-2.STL		CuBe
 28			in/SCpolarizer_end_flange-1.STL		NiPLT
