@@ -654,9 +654,11 @@ struct TParticle{
 						if (entering->ID > leaving->ID){ // check for reflection only, if priority of entered solid is larger than that of current solid
 							hit = true;
 							resetintegration = OnHit(x1, y1, x2, y2, coll.normal, leaving, entering); // do particle specific things
-							if (entering != leaving)
+							if (entering != leaving) //transmission
 								currentsolids.insert(*entering);
-							entering = hitsolid;
+							else
+								ReflSpinFlip(pol, hitsolid); // reassign spin flip if necessary
+							entering = hitsolid; //reset entering for output files
 						}
 					}
 					else if (distnormal > 0){ // particle is leaving solid
@@ -673,10 +675,14 @@ struct TParticle{
 							hit = true;
 							entering = &*++currentsolids.rbegin();
 							resetintegration = OnHit(x1, y1, x2, y2, coll.normal, leaving, entering); // do particle specific things
-							if (entering != leaving)
+							if (entering != leaving){ //transmission
 								currentsolids.erase(*leaving);
-							else
+							}
+							else{//reflection
 								entering = &*++currentsolids.rbegin();
+								ReflSpinFlip(pol, hitsolid);
+							}
+
 						}
 					}
 					else{
@@ -787,6 +793,18 @@ struct TParticle{
 		 */
 		virtual void Decay() = 0;
 
+
+		/**
+		* This virtual method is executed when a particle is reflected off a material boundary
+		*
+		* Calculates and Performs spin flip for a reflection
+		*
+		*
+		* @param p current polarization of the particle
+		* @param mat material that the particle is reflecting off off
+		*
+		*/
+		virtual void ReflSpinFlip(  int &p, const solid *hitsolid ) = 0 ;
 
 		/**
 		 * Calculate kinetic energy.

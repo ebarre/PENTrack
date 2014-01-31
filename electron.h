@@ -129,6 +129,18 @@ protected:
 
 	}
 
+	/**
+	* Calculates and Performs spin flip for a reflection
+	*
+	* nothing happens to electron
+	*
+	* @param p current polarization of the particle
+	* @param hitsolid the solid that the particle is reflecting off of
+	*
+	*/
+	void ReflSpinFlip(  int &p, const solid *hitsolid){
+	};
+
 };
 
 
