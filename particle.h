@@ -137,6 +137,9 @@ struct TParticle{
 		/// number of spin flips
 		int Nspinflip;
 
+		// number of wall spin flips
+		int wallspinflip;
+
 		/// number of integration steps
 		int Nstep;
 
@@ -149,7 +152,7 @@ struct TParticle{
 		 * Has to be called by every derived class constructor with the respective values
 		 */
 		TParticle(const char *aname, const long double qq, const long double mm, const long double mumu)
-				: name(aname), q(qq), m(mm), mu(mumu), tstart(0), field(NULL), ID(0), mc(NULL), polend(0), maxtraj(0), tau(0), particlenumber(0), tend(0), geom(NULL), Nhit(0), Hmax(0), Nstep(0), refltime(0), stepper(NULL), inttime(0), lend(0), polstart(0), Nspinflip(0){ };
+				: name(aname), q(qq), m(mm), mu(mumu), tstart(0), field(NULL), ID(0), mc(NULL), polend(0), maxtraj(0), tau(0), particlenumber(0), tend(0), geom(NULL), Nhit(0), Hmax(0), Nstep(0), refltime(0), stepper(NULL), inttime(0), lend(0), polstart(0), Nspinflip(0), wallspinflip(0) { };
 
 		/**
 		 * Destructor, deletes secondaries
@@ -352,7 +355,7 @@ struct TParticle{
 	                		"polstart Hstart Estart "
 	                		"tend xend yend zend "
 	                		"vxend vyend vzend "
-	                		"polend Hend Eend stopID Nspinflip ComputingTime "
+	                		"polend Hend Eend stopID Nspinflip wallspinflip ComputingTime "
 	                		"Nhit Nstep trajlength Hmax\n";
 				file->precision(10);
 			}
@@ -364,8 +367,8 @@ struct TParticle{
 					<< polstart << " " << Hstart() << " " << Estart() << " "
 					<< x << " " << y[0] << " " << y[1] << " " << y[2] << " "
 					<< y[3] << " " << y[4] << " " << y[5] << " "
-					<< polarisation << " " << E + Epot(x, y, polarisation, field) << " " << E << " " << ID << " " << Nspinflip << " " << inttime << " "
-					<< Nhit << " " << Nstep << " " << lend << " " << Hmax << '\n';
+					<< polarisation << " " << E + Epot(x, y, polarisation, field) << " " << E << " " << ID << " " << Nspinflip << " " 
+					<< wallspinflip << " " << inttime << " " << Nhit << " " << Nstep << " " << lend << " " << Hmax << '\n';
 		};
 
 
@@ -657,7 +660,7 @@ struct TParticle{
 							if (entering != leaving) //transmission
 								currentsolids.insert(*entering);
 							else
-								ReflSpinFlip(pol, hitsolid); // reassign spin flip if necessary
+								ReflSpinFlip(pol, hitsolid, wallspinflip); // reassign spin flip if necessary
 							entering = hitsolid; //reset entering for output files
 						}
 					}
@@ -680,7 +683,7 @@ struct TParticle{
 							}
 							else{//reflection
 								entering = &*++currentsolids.rbegin();
-								ReflSpinFlip(pol, hitsolid);
+								ReflSpinFlip(pol, hitsolid, wallspinflip);
 							}
 
 						}
@@ -804,7 +807,7 @@ struct TParticle{
 		* @param mat material that the particle is reflecting off off
 		*
 		*/
-		virtual void ReflSpinFlip(  int &p, const solid *hitsolid ) = 0 ;
+		virtual void ReflSpinFlip(  int &p, const solid *hitsolid, int &wallspinflip  ) = 0 ;
 
 		/**
 		 * Calculate kinetic energy.

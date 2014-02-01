@@ -289,11 +289,13 @@ protected:
 	* @param hitsolid the solid that the particle is reflecting off of
 	*
 	*/
-	void ReflSpinFlip(  int &p, const solid *hitsolid ){
+	void ReflSpinFlip(  int &p, const solid *hitsolid, int &wallspinflip ){
 		long double prob = mc->UniformDist(0,1); // use a random number generator to get value between 0 and 1
 		//compare with probability of spin flip due to reflection of reflecting material
-		if (prob < hitsolid->mat.SpinFlipProb)
+		if (prob < hitsolid->mat.SpinFlipProb){
 			p = -p; //flipping the polarization
+			wallspinflip++;
+		}
 	};
 
 

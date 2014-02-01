@@ -119,7 +119,7 @@ protected:
 	* @param hitsolid the solid that the particle is reflecting off of
 	*
 	*/
-	void ReflSpinFlip(  int &p, const solid *hitsolid ){
+	void ReflSpinFlip(  int &p, const solid *hitsolid, int &wallspinflip  ){
 	};
 
 };

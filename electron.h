@@ -136,9 +136,10 @@ protected:
 	*
 	* @param p current polarization of the particle
 	* @param hitsolid the solid that the particle is reflecting off of
+	* @param wallspinflip the number of bounce spin flips that have occured for the particle
 	*
 	*/
-	void ReflSpinFlip(  int &p, const solid *hitsolid){
+	void ReflSpinFlip(  int &p, const solid *hitsolid, int &wallspinflip ){
 	};
 
 };
