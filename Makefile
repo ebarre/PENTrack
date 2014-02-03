@@ -1,4 +1,4 @@
-SRC = main.c kdtree.c
+SRC = main.c
 OBJ=$(SRC:.c=.o)
 
 CGAL_INCLUDE= -I$(HOME)/CGAL-4.2/include	# point gcc's -I option to CGAL include directory if you have compiled CGAL manually without installing it
@@ -10,12 +10,12 @@ MUPARSER_LIB= #-L$(HOME)/muparser_v2_2_3/lib/ # point gcc's -L option to muparse
 MUPARSER_SHAREDLIB= #-Wl,-rpath=$(HOME)/muparser_v2_2_3/lib/ # point gcc's -Wl,-rpath= option to muparser shared library if you have compiled muparser manually without installing it
 
 CC=g++
-CFLAGS=-O2 -frounding-math $(CGAL_INCLUDE) $(CGAL_SHAREDLIB) $(MUPARSER_INCLUDE) $(MUPARSER_SHAREDLIB) #-Wall #-pedantic #-g # -O3: optimize -g: debug switch
+CFLAGS=-O2 -frounding-math -Wall -Wno-reorder -Wno-parentheses -Wno-strict-aliasing -Wno-delete-non-virtual-dtor $(CGAL_INCLUDE) $(CGAL_SHAREDLIB) $(MUPARSER_INCLUDE) $(MUPARSER_SHAREDLIB) #-O2: optimize, -Wno-*: suppress warnings from external libraries
 LDFLAGS=-lrt -lboost_system $(CGAL_LIB) -lCGAL $(MUPARSER_LIB) -lmuparser
 RM=rm
 EXE=PENTrack
 
-ADDSRC = libtricubic/libtricubic.cpp libtricubic/tricubic_utils.cpp 
+ADDSRC = libtricubic/libtricubic.cpp libtricubic/tricubic_utils.cpp trianglemesh.cpp
 ADDOBJ = $(ADDSRC:.cpp=.o)
 
 .PHONY: all
