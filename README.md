@@ -127,7 +127,7 @@ stopID: code which identifies how the particle ended/ in what geometry
 • -3: produced numerical error
 • -4: decayed
 • -5 : found no initial position
-• 1: absorbed in default geometry (vacuum – should not happen)
+• 1: absorbed in default geometry /medium
 • 2+: absorbed in geometry associated with number
 NSpinflip: number of spin flips that the particle underwent during simulation
 spinflipprob: probability that the particle with have the opposite polarization from which it started
