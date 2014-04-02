@@ -162,7 +162,8 @@ public:
 		x = r*cos(phi_r);
 		y = r*sin(phi_r);
 		z = mc.UniformDist(zmin,zmax);
-		mc.IsotropicDist(phi_v, theta_v);
+		//mc.IsotropicDist(phi_v, theta_v);
+		mc.tofDist(Ekin, phi_v, theta_v);
 	}
 };
 

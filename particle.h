@@ -539,7 +539,7 @@ struct TParticle{
 		 * @param hitlog Should hits be logged to file?
 		 * @param hitout File stream to which hits are logged.
 		 * @param iteration Iteration counter (incremented by recursive calls to avoid infinite loop)
-		 * @return Returns true if particle was reflected/absorbed
+		 * @return Returns true if particle was reflected/absorbed/transmitted
 		 */
 		bool CheckHit(long double &x1, long double y1[6], long double &x2, long double y2[6], int &pol, bool hitlog, ofstream *&hitout, int iteration = 1){
 			if (!geom->CheckSegment(y1,y2)){ // check if start point is inside bounding box of the simulation geometry
@@ -570,6 +570,7 @@ struct TParticle{
 					}
 //					cout << "Hit " << sld->ID << " - current solid " << currentsolids.rbegin()->ID << '\n';
 					int prevpol = pol;
+					bool wasRefl = false;
 					const solid *leaving, *entering;
 					bool resetintegration = false, hit = false;
 					if (distnormal < 0){ // particle is entering solid
@@ -588,6 +589,8 @@ struct TParticle{
 							resetintegration = OnHit(x1, y1, x2, y2, pol, coll.normal, leaving, entering); // do particle specific things
 							if (entering != leaving)
 								currentsolids.insert(*entering);
+							else
+								wasRefl = true;
 							entering = hitsolid;
 						}
 					}
@@ -606,10 +609,13 @@ struct TParticle{
 							hit = true;
 							entering = &*++currentsolids.rbegin();
 							resetintegration = OnHit(x1, y1, x2, y2, pol, coll.normal, leaving, entering); // do particle specific things
-							if (entering != leaving)
+							if (entering != leaving){
 								currentsolids.erase(*leaving);
-							else
+							}
+							else{
 								entering = &*++currentsolids.rbegin();
+								wasRefl = true;
+							}
 						}
 					}
 					else{
@@ -623,7 +629,7 @@ struct TParticle{
 
 					if (hit){
 						if (hitlog)
-							PrintHit(hitout, x1, y1, y2, prevpol, pol, coll.normal, leaving, entering);
+							PrintHit(hitout, x1, y1, y2, prevpol, pol, coll.normal, leaving, entering, wasRefl);
 						Nhit++;
 					}
 
@@ -832,7 +838,7 @@ struct TParticle{
 		 * @param leaving Material which is left at this boundary
 		 * @param entering Material which is entered at this boundary
 		 */
-		virtual void PrintHit(ofstream *&hitfile, long double x, long double *y1, long double *y2, int pol1, int pol2, long double *normal, const solid *leaving, const solid *entering){
+		virtual void PrintHit(ofstream *&hitfile, long double x, long double *y1, long double *y2, int pol1, int pol2, long double *normal, const solid *leaving, const solid *entering, bool wasRefl){
 			if (!hitfile){
 				ostringstream filename;
 				filename << outpath << '/' << setw(12) << setfill('0') << jobnumber << name << "hit.out";
@@ -845,7 +851,7 @@ struct TParticle{
 				*hitfile << "jobnumber particle "
 							"t x y z v1x v1y v1z pol1 "
 							"v2x v2y v2z pol2 "
-							"nx ny nz solid1 solid2\n";
+							"nx ny nz solid1 solid2 reflected \n";
 				hitfile->precision(10);
 			}
 
@@ -853,7 +859,7 @@ struct TParticle{
 			*hitfile << jobnumber << " " << particlenumber << " "
 					<< x << " " << y1[0] << " " << y1[1] << " " << y1[2] << " " << y1[3] << " " << y1[4] << " " << y1[5] << " " << pol1 << " "
 					<< y2[3] << " " << y2[4] << " " << y2[5] << " " << pol2 << " "
-					<< normal[0] << " " << normal[1] << " " << normal[2] << " " << leaving->ID << " " << entering->ID << '\n';
+					<< normal[0] << " " << normal[1] << " " << normal[2] << " " << leaving->ID << " " << entering->ID << " " << wasRefl << '\n';
 		}
 
 

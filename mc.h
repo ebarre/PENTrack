@@ -154,6 +154,32 @@ public:
 		theta = SinDist(0,pi);
 	};
 	
+	/**
+	 * Outputs velocity spectrum for TOF expt given a chosen energy spectrum
+	 * (guide is along y -axis)
+	 *
+	 * @param &Ekin  - kinetic energy (does not get changed)
+	 * @param &phi_v - azimuthal associated with velocity
+	 * @param &theta_v - polar associated with velocity
+	 */
+	void tofDist(long double &Ekin, long double phi_v, long double theta_v){
+		long double v_x,v_y, v_tot, v_y_max, xz_ang, v_yaxis, v_xaxis, v_zaxis;
+		v_y_max =1;// based on v_y distribution (see for loop below)		
+		v_tot = sqrt(2*Ekin/m_n);
+
+		for(;;){
+			v_x = UniformDist(0, v_tot);
+			v_y = sqrt(v_x) ; //will replace with distribution of velocity along axis
+			if(UniformDist(0, v_y_max)<v_y)
+				v_yaxis = v_x;
+		}	
+		
+		xz_ang = UniformDist(0,2*pi);
+		v_xaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*cos(xz_ang);
+		v_zaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*sin(xz_ang);
+
+	};
+
 
 	/// energy distribution of UCNs
 	long double NeutronSpectrum(){
