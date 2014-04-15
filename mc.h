@@ -162,21 +162,27 @@ public:
 	 * @param &phi_v - azimuthal associated with velocity
 	 * @param &theta_v - polar associated with velocity
 	 */
-	void tofDist(long double &Ekin, long double phi_v, long double theta_v){
-		long double v_x,v_y, v_tot, v_y_max, xz_ang, v_yaxis, v_xaxis, v_zaxis;
-		v_y_max =1;// based on v_y distribution (see for loop below)		
+	void tofDist(long double &Ekin, long double &phi, long double &theta){
+		long double v_x,v_y, v_tot, xz_ang, v_yaxis, v_xaxis, v_zaxis;		
 		v_tot = sqrt(2*Ekin/m_n);
 
 		for(;;){
-			v_x = UniformDist(0, v_tot);
-			v_y = sqrt(v_x) ; //will replace with distribution of velocity along axis
-			if(UniformDist(0, v_y_max)<v_y)
+			v_x = UniformDist(0, v_tot);	
+			v_y = (1/(2.270*v_x + 0.0122*pow(v_x,2)))*exp(-pow((log(2.270/v_x +0.0122) +1.4137),2)/(2*pow(0.2430,2))); 
+
+			if(UniformDist(0,0.04570423)<v_y){
 				v_yaxis = v_x;
+				xz_ang = UniformDist(0,2*pi);
+				v_xaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*cos(xz_ang);
+				v_zaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*sin(xz_ang);
+				phi = atan2(v_yaxis,v_xaxis);
+				theta = acos(v_zaxis/v_tot);
+				return;
+			}
+			
 		}	
 		
-		xz_ang = UniformDist(0,2*pi);
-		v_xaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*cos(xz_ang);
-		v_zaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*sin(xz_ang);
+
 
 	};
 

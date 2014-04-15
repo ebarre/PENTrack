@@ -211,7 +211,7 @@ struct TParticle{
 			cout << "Particle no.: " << particlenumber << " particle type: " << name << '\n';
 			cout << "x: " << yend[0] << " y: " << yend[1] << " z: " << yend[2]
 			     << " E: " << Eend() << " t: " << tend << " tau: " << tau << " lmax: " << maxtraj << '\n';
-		
+
 			// set initial values for integrator
 			long double x = tend, x1, x2;
 			VecDoub y(6, yend), dydx(6);
@@ -262,8 +262,10 @@ struct TParticle{
 					h = tstart + tau - x;	//If stepsize can overshoot, decrease.
 				if (x + h > tmax)
 					h = tmax - x;
+
 				
 				clock_gettime(CLOCK_REALTIME, &clock_start); // start computing time measure
+				
 				try{
 					stepper->step(h, *this); // integrate one step
 					h = stepper->hnext; // set suggested stepsize for next step
@@ -272,6 +274,7 @@ struct TParticle{
 				catch(...){ // catch Exceptions thrown by numerical recipes routines
 					ID = ID_NRERROR;
 				}
+
 				clock_gettime(CLOCK_REALTIME, &clock_end);
 				inttime += clock_end.tv_sec - clock_start.tv_sec + (long double)(clock_end.tv_nsec - clock_start.tv_nsec)/1e9;
 				
@@ -399,6 +402,7 @@ struct TParticle{
 
 			InitE(number, t, mcgen.LifeTime(name), p[0], p[1], p[2],
 				E, phi, theta, mcgen.DicePolarisation(name), mcgen.MaxTrajLength(name), ageometry, afield);
+
 		};
 
 
@@ -430,9 +434,12 @@ struct TParticle{
 				vstart = sqrt(2*Ekin/m);
 			else
 				vstart = c_0 * sqrt(1-(1/(gammarel*gammarel)));
+			
 			InitV(number, t, atau, x, y, z,
 					vstart*cos(phi)*sin(theta), vstart*sin(phi)*sin(theta), vstart*cos(theta),
 					pol, trajl, ageometry, afield);
+
+
 		}
 
 		/**
