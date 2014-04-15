@@ -162,8 +162,7 @@ public:
 		x = r*cos(phi_r);
 		y = r*sin(phi_r);
 		z = mc.UniformDist(zmin,zmax);
-		//mc.IsotropicDist(phi_v, theta_v);
-		mc.tofDist(Ekin, phi_v, theta_v);
+		mc.IsotropicDist(phi_v, theta_v);
 	}
 };
 
@@ -253,7 +252,8 @@ public:
 			p[1] = mc.UniformDist(kdtree.tree.bbox().ymin(),kdtree.tree.bbox().ymax()); // random point
 			p[2] = mc.UniformDist(kdtree.tree.bbox().zmin(),kdtree.tree.bbox().zmax()); // random point
 			if (kdtree.InSolid(p)){
-				mc.IsotropicDist(phi_v, theta_v);
+				//mc.IsotropicDist(phi_v, theta_v);
+				mc.tofDist(Ekin, phi_v, theta_v);
 				x = p[0];
 				y = p[1];
 				z = p[2];

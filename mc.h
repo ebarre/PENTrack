@@ -165,10 +165,11 @@ public:
 	void tofDist(long double &Ekin, long double &phi, long double &theta){
 		long double v_x,v_y, v_tot, xz_ang, v_yaxis, v_xaxis, v_zaxis;		
 		v_tot = sqrt(2*Ekin/m_n);
-
+		int i =0;
 		for(;;){
+			i++;
 			v_x = UniformDist(0, v_tot);	
-			v_y = (1/(2.270*v_x + 0.0122*pow(v_x,2)))*exp(-pow((log(2.270/v_x +0.0122) +1.4137),2)/(2*pow(0.2430,2))); 
+			v_y = (1/(2.270*v_x + 0.0122*pow(v_x,2)))*exp(-pow((log(2.270/v_x +0.0122) +1.4137),2)/(2*pow(0.3420,2))); 
 
 			if(UniformDist(0,0.04570423)<v_y){
 				v_yaxis = v_x;
@@ -177,8 +178,25 @@ public:
 				v_zaxis = sqrt(pow(v_tot,2)-pow(v_yaxis,2))*sin(xz_ang);
 				phi = atan2(v_yaxis,v_xaxis);
 				theta = acos(v_zaxis/v_tot);
+				//check x component
+				if(v_xaxis - v_tot*cos(phi)*sin(theta) > 0.01){
+					cout<< "Il y a un problem avec la calculation du v_x \n"; 
+					sleep(1);
+				}else if(v_yaxis - v_tot*sin(phi)*sin(theta) > 0.01){
+					cout<< "Il y a un problem avec la calculation du v_y \n"; 
+					sleep(1);
+				}else if(v_zaxis - v_tot*cos(theta) > 0.01){
+					cout<< "Il y a un problem avec la calculation du v_z \n"; 
+					sleep(1);
+				}
 				return;
 			}
+			if(i > 100){ //show that there is a problem by setting phi and theta to 100
+				phi = i;
+				theta = i;
+				return;
+			}
+			
 			
 		}	
 		
